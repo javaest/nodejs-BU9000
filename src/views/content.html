@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kontext</title>
+</head>
+<body onload="loadContent()">
+  <h1>Willkommen, <span id="username">Lade...</span>!</h1>
+  <p>Dies ist deine persönliche Seite nach dem Login.</p>
+
+  <h2>Kontextbezogene Inhalte:</h2>
+  <p>Hier kannst du Informationen oder personalisierte Inhalte für den Benutzer anzeigen.</p>
+
+  <form action="/logout" method="POST">
+    <button type="submit">Abmelden</button>
+  </form>
+
+  <script>
+    // Diese Funktion wird beim Laden der Seite ausgeführt
+    function loadContent() {
+      // Fetch-Request, um den Benutzernamen vom Server zu erhalten
+      fetch('/get-username')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Benutzer nicht angemeldet');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Setze den Benutzernamen in das HTML-Element
+          document.getElementById('username').textContent = data.username;
+        })
+        .catch(error => {
+          document.getElementById('username').textContent = 'Unbekannt';
+          console.error('Fehler:', error);
+        });
+    }
+  </script>
+</body>
+</html>

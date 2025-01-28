@@ -29,4 +29,3 @@ req.on('error', (error) => {
   console.error('An error occurred: ', error);
 });
 
-req.end();
