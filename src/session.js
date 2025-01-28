@@ -2,6 +2,10 @@ const express = require('express');
 const session = require('express-session');
 const app = express();
 const path = require('path');
+let members = [
+  { name: 'Alice', password: '1234' },
+  { name: 'Alicec', password: '12345' }
+];
 
 // Middleware für JSON Parsing (falls du POST-Daten benötigst)
 app.use(express.json());
@@ -26,18 +30,58 @@ app.get('/get-username', (req, res) => {
       res.status(401).json({ error: 'Nicht angemeldet' });
     }
   });
+
+
+  app.get('/signin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'signin.html'));  // Senden der login.html-Seite
+  });
+  
+
+
+
+
+
+  app.post('/signin', (req, res) => {
+    
+
+    const { username, password } = req.body;
+   
+  if (!username || !password) {
+    return res.status(400).send('Bad Request: Name is required');
+  }
+
+  const newMember = {
+    name: username, 
+    password: password
+  };
+
+  members.push(newMember);
+  
+
+  return res.redirect('/login');
+
+    
+    
+    
+});
+
+
+
+
   
 // Route zum Bearbeiten des Login-Formulars
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
+  const user = members.find(member => member.name === username && member.password === password);
+
   // Einfache Benutzerüberprüfung (dies sollte durch sichere Authentifizierung ersetzt werden)
-  if (username === 'admin' && password === 'password123') {
-    req.session.user = username;  // Speichern des Benutzernamens in der Session
-    return res.redirect('/content');  // Umleitung zur zweiten Seite nach dem Login
-  } else {
-    return res.status(401).send('Falsche Anmeldedaten');  // Fehlermeldung, wenn die Anmeldedaten falsch sind
-  }
+  if (user) {
+    req.session.user = username; // Benutzername in der Session speichern
+    return res.redirect('/content');
+} else {
+    return res.status(401).send('Ungültige Anmeldedaten');
+}
 });
 
 // Route für die "Context"-Seite nach dem Login
